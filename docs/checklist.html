@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agreement Review Checklist</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#ffffff; --ink:#1c2530; --muted:#5b6b7b;
+    --line:#e2e7ee; --brand:#2a5bd7; --brand-ink:#fff;
+    --ok:#137a4b; --ok-bg:#e6f5ed; --attn:#9a6a00; --attn-bg:#fdf3dc;
+    --miss:#b3261e; --miss-bg:#fbe7e6; --shadow:0 1px 3px rgba(20,30,45,.08);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0f141a; --card:#161d26; --ink:#e7edf4; --muted:#9fb0c0;
+      --line:#26303c; --brand:#5b86f0; --ok:#4cc38a; --ok-bg:#123528;
+      --attn:#e0a83a; --attn-bg:#37300f; --miss:#f2837c; --miss-bg:#3a1614;
+      --shadow:0 1px 3px rgba(0,0,0,.4);
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink)}
+  header{background:var(--card);border-bottom:1px solid var(--line)}
+  .wrap{max-width:880px;margin:0 auto;padding:0 20px}
+  h1{font-size:1.5rem;margin:.2rem 0}
+  .sub{color:var(--muted);margin:.2rem 0 1rem}
+  .disclaimer{background:var(--attn-bg);color:var(--attn);border:1px solid color-mix(in srgb,var(--attn) 40%,transparent);
+    border-radius:8px;padding:.6rem .8rem;font-size:.9rem;margin:1rem 0}
+  main{padding:1.25rem 0 4rem}
+  .controls{display:flex;flex-wrap:wrap;gap:1rem;background:var(--card);border:1px solid var(--line);
+    border-radius:12px;padding:1rem;box-shadow:var(--shadow)}
+  .field{display:flex;flex-direction:column;gap:.25rem;min-width:220px;flex:1}
+  label{font-weight:600;font-size:.9rem}
+  select,textarea{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);
+    border-radius:8px;padding:.5rem .6rem}
+  .sidenote{color:var(--muted);font-size:.85rem;margin:.5rem 0 0}
+  .progress{display:flex;align-items:center;gap:.75rem;margin:1.25rem 0 .5rem}
+  .bar{flex:1;height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+  .bar > i{display:block;height:100%;width:0;background:var(--brand);transition:width .2s}
+  .count{font-size:.85rem;color:var(--muted);white-space:nowrap}
+  section.group{margin:1.5rem 0 .5rem}
+  section.group > h2{font-size:1.05rem;border-bottom:2px solid var(--line);padding-bottom:.35rem}
+  .clause{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.85rem 1rem;
+    margin:.6rem 0;box-shadow:var(--shadow)}
+  .clause.ok{border-left:4px solid var(--ok)}
+  .clause.attn{border-left:4px solid var(--attn)}
+  .clause.missing{border-left:4px solid var(--miss)}
+  .chead{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;justify-content:space-between}
+  .ctitle{font-weight:600}
+  .marks{display:flex;gap:.35rem;flex-wrap:wrap}
+  .marks button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--bg);
+    color:var(--muted);border-radius:99px;padding:.25rem .7rem;font-size:.82rem}
+  .marks button[aria-pressed="true"][data-mark="ok"]{background:var(--ok-bg);color:var(--ok);border-color:var(--ok)}
+  .marks button[aria-pressed="true"][data-mark="attn"]{background:var(--attn-bg);color:var(--attn);border-color:var(--attn)}
+  .marks button[aria-pressed="true"][data-mark="missing"]{background:var(--miss-bg);color:var(--miss);border-color:var(--miss)}
+  .disclose{margin-top:.5rem;background:none;border:none;color:var(--brand);cursor:pointer;
+    font:inherit;font-size:.85rem;padding:0}
+  .details{margin-top:.6rem;border-top:1px dashed var(--line);padding-top:.6rem;font-size:.92rem}
+  .details p{margin:.35rem 0}
+  .details .lbl{color:var(--muted);font-weight:600}
+  .details textarea{width:100%;margin-top:.35rem;min-height:52px;resize:vertical}
+  .btns{display:flex;gap:.6rem;flex-wrap:wrap;margin:1rem 0}
+  button.primary,button.ghost{font:inherit;cursor:pointer;border-radius:8px;padding:.55rem .95rem;border:1px solid var(--line)}
+  button.primary{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+  button.ghost{background:var(--card);color:var(--ink)}
+  #summary{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1rem 1.15rem;
+    box-shadow:var(--shadow)}
+  #summary h2{margin-top:0}
+  .tag{display:inline-block;font-size:.78rem;padding:.1rem .5rem;border-radius:99px;margin-right:.4rem}
+  .tag.ok{background:var(--ok-bg);color:var(--ok)} .tag.attn{background:var(--attn-bg);color:var(--attn)}
+  .tag.miss{background:var(--miss-bg);color:var(--miss)} .tag.todo{background:var(--line);color:var(--muted)}
+  #summary ul{margin:.35rem 0 .9rem;padding-left:1.1rem}
+  #summary li{margin:.3rem 0}
+  #summary .sug{color:var(--muted);font-size:.9rem}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);
+    padding:.55rem 1rem;border-radius:8px;opacity:0;transition:opacity .2s;pointer-events:none}
+  .toast.show{opacity:1}
+  footer{color:var(--muted);font-size:.85rem;text-align:center;padding:2rem 1rem}
+  @media print{
+    body{background:#fff;color:#000}
+    body * {visibility:hidden}
+    #printArea, #printArea * {visibility:visible}
+    #printArea{position:absolute;left:0;top:0;width:100%;padding:0 8mm}
+    #printArea h2{margin:.2rem 0}
+  }
+  #printArea{display:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Agreement Review Checklist</h1>
+    <p class="sub">A free, self-service guide for reviewing agreements — no sign-in, no accounts, nothing to install. Prefer to <strong>upload a file and have it auto-check for you</strong>? <a href="index.html">Use the uploader →</a></p>
+    <div class="disclaimer">⚠️ This checklist helps you spot gaps quickly. It is <strong>not legal advice</strong>. For anything high-stakes, have a qualified lawyer confirm.</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="controls">
+    <div class="field">
+      <label for="type">1. What kind of agreement is it?</label>
+      <select id="type"></select>
+    </div>
+    <div class="field">
+      <label for="side">2. Which side are you on?</label>
+      <select id="side">
+        <option value="">— select —</option>
+        <option>Customer / client</option>
+        <option>Vendor / provider</option>
+        <option>Employer</option>
+        <option>Employee / contractor</option>
+        <option>Disclosing party</option>
+        <option>Receiving party</option>
+        <option>Landlord / lessor</option>
+        <option>Tenant / lessee</option>
+        <option>Buyer</option>
+        <option>Seller</option>
+        <option>Partner</option>
+        <option>Other / not sure</option>
+      </select>
+    </div>
+  </div>
+  <p class="sidenote">Tip: what counts as “risky” or “one-sided” depends on your side — keep it in mind as you go. Read the agreement next to this list and mark each clause.</p>
+
+  <div class="progress">
+    <div class="bar"><i id="barFill"></i></div>
+    <div class="count" id="progressText">0 of 0 reviewed</div>
+  </div>
+
+  <div id="checklist"></div>
+
+  <div class="btns">
+    <button class="primary" id="copyBtn">📋 Copy summary</button>
+    <button class="ghost" id="printBtn">🖨️ Print / Save as PDF</button>
+    <button class="ghost" id="resetBtn">↺ Start a new review</button>
+  </div>
+
+  <div id="summary"></div>
+</main>
+
+<div id="printArea"></div>
+<div class="toast" id="toast"></div>
+<footer>Free to use and share. Built for the Legal-Tool project · Not legal advice.</footer>
+
+<script>
+/* ---------------- Checklist data (mirrors agreement-reviewer/checklists/*.md) ---------------- */
+const C = {
+common: [
+ {c:`Parties & signatures`, why:`The contract must clearly name who is legally bound and be signed by authorised people.`, look:`Full legal entity names, addresses, and a signature block (name, title, date) for each party.`, flags:`Wrong or informal entity names; no signature block; one side only "acknowledges".`, sug:`Add a parties clause with full legal names and a dated signature block for each side.`},
+ {c:`Term (duration)`, why:`Sets when the agreement starts and how long it lasts.`, look:`A clear start date, a fixed term or ongoing status, and any renewal terms.`, flags:`No end date; perpetual obligations with no way out.`, sug:`State the start date and duration, e.g. "in effect for 12 months from the Effective Date".`},
+ {c:`Termination`, why:`Lets each side exit — for breach, and often for convenience.`, look:`Termination for cause with a cure period; ideally for convenience with notice; what happens on termination.`, flags:`Only one side can terminate; no cure period; the other party can terminate immediately for any reason.`, sug:`Add mutual rights: terminate for material breach uncured after 30 days' notice, and optionally for convenience on 30 days' notice.`},
+ {c:`Governing law & jurisdiction`, why:`Decides which law applies and where disputes are heard.`, look:`A named governing law and a chosen court/venue.`, flags:`A jurisdiction that is inconvenient or unfavourable to you; law different from where you operate.`, sug:`"This Agreement is governed by the laws of [place]; the courts of [location] have exclusive jurisdiction."`},
+ {c:`Dispute resolution`, why:`Sets how disagreements get resolved (courts, arbitration, mediation first).`, look:`A clear path; if arbitration, where and under which rules.`, flags:`Mandatory arbitration in a distant venue; a hidden waiver of the right to go to court.`, sug:`Add a path such as good-faith negotiation first, then the chosen forum.`},
+ {c:`Limitation of liability`, why:`Caps how much each side can owe if things go wrong — often the most important clause financially.`, look:`A cap on total liability and exclusion of indirect/consequential damages, applied to both sides.`, flags:`No cap; a cap that protects only the other side; you carry unlimited liability.`, sug:`Add a mutual cap (e.g. total liability limited to fees paid in the prior 12 months) and exclude indirect/consequential damages.`},
+ {c:`Indemnification`, why:`One side agrees to cover certain losses or claims of the other.`, look:`What triggers it, mutual where appropriate, and whether it's subject to the liability cap.`, flags:`One-way indemnity against you; broad uncapped indemnity; covering the other side's own negligence.`, sug:`Add a balanced indemnity for third-party claims arising from each party's breach or IP infringement.`},
+ {c:`Confidentiality`, why:`Protects sensitive information shared under the agreement.`, look:`What's confidential, permitted uses, standard exclusions, and how long the duty lasts.`, flags:`One-way when it should be mutual; no workable time limit; no carve-out for legally required disclosure.`, sug:`Add a mutual confidentiality clause covering non-public information.`},
+ {c:`Intellectual property ownership`, why:`Says who owns what is created, used, or licensed.`, look:`Clear ownership of pre-existing IP and of anything created; licence grants with scope.`, flags:`Your IP transferring by default; vague "all IP belongs to [other party]"; no licence back where you still need it.`, sug:`Each party keeps its pre-existing IP; specify who owns deliverables and any licence grants.`},
+ {c:`Warranties & disclaimers`, why:`Promises about quality/authority, and what's disclaimed.`, look:`Reasonable, mutual warranties (e.g. authority to enter) and clearly scoped disclaimers.`, flags:`You give broad warranties while the other side disclaims everything ("as is").`, sug:`Add mutual authority warranties and a balanced disclaimer.`},
+ {c:`Assignment`, why:`Controls whether a party can transfer the contract to someone else.`, look:`Consent required to assign, usually with an exception for mergers/acquisitions.`, flags:`The other side can freely assign to anyone; you cannot assign even in a sale of your business.`, sug:`"Neither party may assign without the other's consent, except to a successor in a merger or sale of substantially all assets."`},
+ {c:`Notices`, why:`How official communications (like termination) must be sent to count.`, look:`Addresses, accepted methods (email/registered post), and when notice is deemed received.`, flags:`Only physical mail accepted; addresses missing.`, sug:`Add a notices clause with addresses and accepted methods including email.`},
+ {c:`Entire agreement`, why:`States the written contract is the full deal, so side promises don't bind.`, look:`A clause saying this document supersedes prior discussions.`, flags:`Its absence can let disputed oral promises in.`, sug:`"This Agreement is the entire agreement and supersedes all prior discussions."`},
+ {c:`Severability`, why:`If one clause is invalid, the rest of the contract survives.`, look:`A standard severability clause.`, flags:`Absent — one bad clause could put more at risk.`, sug:`"If any provision is held unenforceable, the remaining provisions remain in full force."`},
+ {c:`Force majeure`, why:`Excuses performance during events outside a party's control.`, look:`A reasonable list of events and a notice/mitigation duty.`, flags:`Only the other side benefits; overly broad excuse to avoid paying indefinitely.`, sug:`Add a mutual force majeure clause covering events beyond reasonable control.`},
+ {c:`Amendment`, why:`Prevents informal changes to the deal.`, look:`Changes valid only if in writing and signed by both parties.`, flags:`Allows informal or oral changes.`, sug:`"This Agreement may only be amended in writing signed by both parties."`},
+ {c:`Data protection / privacy`, why:`Required whenever personal data is shared or processed.`, look:`Who is controller/processor, security obligations, and compliance with applicable law (e.g. GDPR).`, flags:`Personal data handled with no security or compliance terms.`, sug:`Add a data-protection clause (or a Data Processing Addendum) if any personal data is involved.`}
+],
+nda: [
+ {c:`Mutual vs one-way`, why:`Decides whether only one side, or both, must protect information.`, look:`If both sides share information, it should be mutual.`, flags:`A one-way NDA when you will also disclose your own information.`, sug:`Make it mutual, or add reciprocal obligations.`},
+ {c:`Definition of Confidential Information`, why:`Sets what is actually protected.`, look:`A clear definition covering written, oral, and visual information, and whether it must be marked "confidential".`, flags:`So narrow it excludes oral disclosures, or so broad it covers public information.`, sug:`Define it as non-public business, technical and financial information disclosed in any form.`},
+ {c:`Standard exclusions`, why:`Information that shouldn't be locked up.`, look:`Carve-outs for info that is public, already known, independently developed, or lawfully received from a third party.`, flags:`No exclusions — makes the NDA overbroad and hard to comply with.`, sug:`Add the four standard exclusions (public, already known, independently developed, lawfully received).`},
+ {c:`Permitted use / purpose`, why:`Limits what the receiver may do with the information.`, look:`A stated purpose, e.g. "solely to evaluate a potential business relationship".`, flags:`No purpose limit; the receiver is free to use the info for anything.`, sug:`Add a purpose clause restricting use to the intended relationship.`},
+ {c:`Permitted disclosures (need-to-know & legal)`, why:`Lets the receiver share with staff/advisors and comply with the law.`, look:`Disclosure to employees/advisors on a need-to-know basis under confidentiality, plus a carve-out for legally compelled disclosure with notice.`, flags:`No legal-compulsion carve-out (can't comply with a subpoena); no need-to-know sharing.`, sug:`Add need-to-know and legally-required-disclosure carve-outs.`},
+ {c:`Term of confidentiality`, why:`How long the duty to protect lasts.`, look:`A defined period (commonly 2–5 years; indefinite for trade secrets).`, flags:`No end date for ordinary business info, or a period too short to protect.`, sug:`Add a confidentiality period, e.g. 3 years from disclosure.`},
+ {c:`Return or destruction`, why:`Ensures the info is dealt with when the relationship ends.`, look:`Obligation to return or destroy on request, with optional archival copies for compliance.`, flags:`No return/destruction duty; the receiver may keep everything forever.`, sug:`Add a return-or-destroy-on-request clause.`},
+ {c:`No licence / no obligation`, why:`Sharing info shouldn't transfer IP rights or force a deal.`, look:`A statement that no licence or ownership is granted and no party must proceed with a transaction.`, flags:`Language implying disclosure grants rights to use the underlying IP.`, sug:`"No licence or ownership in the disclosed information is granted, and nothing obligates either party to enter a further agreement."`},
+ {c:`Remedies / injunctive relief`, why:`Money damages often can't undo a leak; an injunction can stop one.`, look:`Acknowledgement that breach may cause irreparable harm and that injunctive relief is available.`, flags:`Only the other party gets this remedy.`, sug:`Make the injunctive-relief clause mutual.`},
+ {c:`Residuals clause (watch closely)`, why:`A "residuals" clause lets the receiver use general knowledge kept in memory — it can quietly gut the NDA.`, look:`Whether one exists and how broad it is.`, flags:`A broad residuals clause benefiting the other side (high risk for the disclosing party).`, sug:`Narrow or remove a one-sided residuals clause.`}
+],
+serviceSaas: [
+ {c:`Scope of services / description`, why:`Defines exactly what is being delivered.`, look:`A clear services description or an attached Statement of Work (SOW) / order form.`, flags:`Vague scope ("services as agreed"); a referenced SOW/exhibit not attached.`, sug:`Add or attach a specific description of services or deliverables.`},
+ {c:`Fees, payment terms & taxes`, why:`What you pay, when, and what happens if you don't.`, look:`Amounts, invoicing schedule, payment window (e.g. net 30), late fees, and who bears taxes.`, flags:`Vendor can change prices unilaterally; large late fees; payment due on receipt; unclear tax responsibility.`, sug:`Add clear fees, an invoicing/payment schedule, and a cap on annual price increases.`},
+ {c:`Service levels (SLA) / uptime`, why:`Sets performance guarantees for SaaS/services.`, look:`Uptime %, support response times, and credits/remedies if missed.`, flags:`Uptime promised but no remedy; credits too small to matter; SLA excluded entirely.`, sug:`Add an SLA with a measurable target and service credits as a remedy.`},
+ {c:`Data ownership & return`, why:`Confirms your data stays yours and you can get it back.`, look:`You own your data; export/return on termination in a usable format; deletion after a set period.`, flags:`Vendor claims rights over your data; no export on exit; data held hostage until final payment.`, sug:`"Customer owns all Customer Data; Vendor will make it available for export on termination and delete it thereafter."`},
+ {c:`Data security`, why:`How your data is protected.`, look:`Security measures, breach notification, and relevant standards/certs (e.g. SOC 2, ISO 27001).`, flags:`No security commitments; no breach-notice obligation.`, sug:`Add security obligations and a prompt breach-notification duty.`},
+ {c:`Subprocessors / subcontractors`, why:`Third parties the vendor uses to handle your data or deliver services.`, look:`Disclosure of subprocessors, flow-down of obligations, and notice of changes.`, flags:`Unlimited right to subcontract with no accountability.`, sug:`Require equivalent obligations and vendor responsibility for their subprocessors' acts.`},
+ {c:`Support & maintenance`, why:`How you get help and updates.`, look:`Support channels, hours, and whether maintenance/updates are included.`, flags:`Support only at extra cost with no detail; uncapped maintenance downtime.`, sug:`Add support scope, hours, and maintenance-window limits.`},
+ {c:`Term, renewal & auto-renewal`, why:`Auto-renewal can lock you in and trigger surprise charges.`, look:`Initial term, renewal length, and the notice window to cancel.`, flags:`Auto-renews for a full year; long notice window (e.g. 90 days) to cancel; price jumps on renewal.`, sug:`Add a reasonable cancellation notice (e.g. 30 days) and cap renewal price increases.`},
+ {c:`Warranties & acceptance`, why:`Promise the service performs as described, and a way to reject defective deliverables.`, look:`A performance warranty and (for deliverables) an acceptance/rejection process.`, flags:`Service provided "as is" with no warranty; deemed acceptance in an unrealistically short time.`, sug:`Add a performance warranty and a fair acceptance-testing period.`},
+ {c:`Liability cap sizing`, why:`Generic caps may be too low for the value at risk.`, look:`A cap tied to fees (e.g. 12 months' fees) with carve-outs for confidentiality/IP/data breaches above the cap.`, flags:`Cap set at one month's fees; data-breach liability squeezed under a tiny cap.`, sug:`Add super-cap carve-outs for data breach and confidentiality.`},
+ {c:`Insurance`, why:`Confirms the vendor can cover losses it causes.`, look:`Required insurance types and minimum amounts.`, flags:`No insurance requirement for a vendor handling sensitive data.`, sug:`Add reasonable insurance requirements (e.g. cyber, general liability).`},
+ {c:`Exit / transition assistance`, why:`Helps you move off the service without disruption.`, look:`A transition/wind-down period and vendor cooperation on migration.`, flags:`Service cuts off immediately on termination; no migration help.`, sug:`Add a transition-assistance clause with a defined wind-down period.`}
+],
+employment: [
+ {c:`Role, duties & reporting`, why:`Defines the job and expectations.`, look:`Job title, key duties, and who the person reports to.`, flags:`Duties so broad the employer can reassign to anything; "other duties as assigned" with no limit.`, sug:`Add a role description with core responsibilities.`},
+ {c:`Employee vs contractor classification`, why:`Misclassifying a worker as a contractor creates tax and legal liability.`, look:`Consistency between the label and the reality (control, hours, tools, exclusivity).`, flags:`A "contractor" who works fixed hours under close control like an employee.`, sug:`Align the terms with the true working relationship; flag for review.`},
+ {c:`Compensation & benefits`, why:`Pay, bonus, equity, and benefits are the core of the deal.`, look:`Salary/rate, pay frequency, bonus/commission terms, equity details (vesting), and benefits.`, flags:`Discretionary bonus with no criteria; equity mentioned but no vesting/documents; a rate but no payment schedule.`, sug:`Add clear compensation terms and, for equity, the vesting schedule and governing plan.`},
+ {c:`Working hours, location & expenses`, why:`Sets expectations and reimbursement.`, look:`Hours/FTE, location or remote terms, and expense reimbursement.`, flags:`Unlimited availability expected; no expense policy.`, sug:`Add hours/location terms and an expense-reimbursement clause.`},
+ {c:`At-will status / notice period`, why:`How the relationship can end.`, look:`At-will language (US) or a notice period (many countries), applied to both sides.`, flags:`Long notice required from the worker but none from the employer; no notice where law expects it.`, sug:`Add appropriate, balanced termination/notice terms for the jurisdiction.`},
+ {c:`Termination & severance`, why:`What happens, and what's paid, on exit.`, look:`Grounds for termination for cause, severance terms, and treatment of accrued pay/leave.`, flags:`Broad "for cause" with no definition; forfeiture of earned wages; no severance where expected.`, sug:`Add a clear "for cause" definition and severance/accrued-pay terms.`},
+ {c:`IP assignment`, why:`Ensures work created belongs to the employer/client.`, look:`Assignment of work-related IP, with carve-outs for prior inventions and statutory personal-project exclusions.`, flags:`Assignment of ALL IP including unrelated personal projects; no prior-inventions carve-out.`, sug:`Add an IP-assignment clause covering work product, with a prior-inventions carve-out.`},
+ {c:`Confidentiality (employment)`, why:`Protects employer information during and after the role.`, look:`Confidentiality obligations that survive termination.`, flags:`No confidentiality at all, or so broad it blocks the worker's ordinary skills and knowledge.`, sug:`Add a confidentiality clause surviving the end of employment.`},
+ {c:`Non-compete (enforceability varies)`, why:`Restricts working for competitors after leaving — heavily regulated and often unenforceable.`, look:`Reasonable scope, geography, and duration — and whether it is even allowed where the person works.`, flags:`Broad, long, no-geographic-limit non-compete; may be void. Confirm local law.`, sug:`If included, keep it narrow and lawful; confirm local enforceability.`},
+ {c:`Non-solicitation`, why:`Restricts poaching clients/employees after leaving — usually more enforceable than non-competes.`, look:`A reasonable duration (e.g. 12 months) and clear scope.`, flags:`Indefinite or extremely broad non-solicit.`, sug:`Add a reasonable non-solicit if protection is needed.`},
+ {c:`Restrictive covenants — overall balance`, why:`Stacked restrictions can overreach.`, look:`That the bundle (non-compete + non-solicit + confidentiality + IP) is reasonable and lawful locally.`, flags:`Aggressive, one-sided restrictions with no consideration.`, sug:`Narrow the restrictions to what is enforceable and necessary.`}
+],
+lease: [
+ {c:`Rent, deposit & increases`, why:`The core financial terms.`, look:`Rent amount, due date, deposit amount and return conditions, and how/when rent can increase.`, flags:`Uncapped or arbitrary rent increases; a deposit with no return conditions.`, sug:`Add clear rent, deposit-return terms, and a cap or formula on increases.`},
+ {c:`Term, renewal & early exit`, why:`How long you're committed and how to leave.`, look:`Term length, renewal option, break/early-termination rights, and holdover terms.`, flags:`No break clause; punitive holdover rent; auto-renewal.`, sug:`Add renewal and early-exit terms.`},
+ {c:`Maintenance & repairs`, why:`Who fixes what.`, look:`A split of responsibilities between landlord/lessor and tenant.`, flags:`Tenant responsible for all structural or major repairs.`, sug:`Add a maintenance-responsibility split.`},
+ {c:`Use, alterations & subletting`, why:`What you may do with the property.`, look:`Permitted use, rules on alterations, and sublet/assignment rights.`, flags:`Overly narrow permitted use; no right to sublet even with consent.`, sug:`Add permitted-use and sublet/assignment-with-consent terms.`},
+ {c:`Insurance & liability`, why:`Who insures and who bears the risk of damage or injury.`, look:`Required insurance and a fair allocation of liability.`, flags:`Tenant indemnifies landlord for the landlord's own negligence.`, sug:`Add balanced insurance and liability terms.`}
+],
+partnership: [
+ {c:`Capital contributions & ownership %`, why:`Who puts in what and who owns what share.`, look:`Each party's contribution and the ownership/profit split.`, flags:`Contributions or splits left "to be agreed".`, sug:`Define contributions and ownership percentages.`},
+ {c:`Profit/loss sharing & distributions`, why:`How money flows to the partners.`, look:`Allocation of profits/losses and distribution timing.`, flags:`Sharing unclear or not matching ownership.`, sug:`Add profit/loss allocation and distribution terms.`},
+ {c:`Governance & decision-making`, why:`How decisions get made and deadlocks resolved.`, look:`Voting rights, reserved matters needing unanimity, and a deadlock mechanism.`, flags:`One partner controls everything; no deadlock resolution.`, sug:`Add governance rules and a deadlock-breaking mechanism.`},
+ {c:`Exit, buyout & dissolution`, why:`How a partner leaves and how the venture ends.`, look:`Buy-sell terms, a valuation method, transfer restrictions, and a wind-down process.`, flags:`No exit route; no valuation method; a partner trapped in.`, sug:`Add buyout/valuation and dissolution terms.`},
+ {c:`IP & non-compete between partners`, why:`Who owns jointly created IP and whether partners can compete.`, look:`Clear IP ownership and any agreed restrictions.`, flags:`Ambiguous ownership of joint work.`, sug:`Add IP ownership and any needed restrictions.`}
+],
+sale: [
+ {c:`Description, quantity & price`, why:`The core of the deal.`, look:`Precise description, quantity, unit price, and total.`, flags:`Vague description; price adjustable by the seller alone.`, sug:`Add an exact goods/asset description and pricing.`},
+ {c:`Delivery, title & risk of loss`, why:`When you get it and who bears the risk in transit.`, look:`Delivery terms/dates, when title passes, and when risk shifts.`, flags:`Risk passes to the buyer before delivery or inspection.`, sug:`Add delivery, title, and risk-transfer terms.`},
+ {c:`Inspection, acceptance & returns`, why:`Your right to check and reject bad goods.`, look:`A right to inspect and reject non-conforming goods.`, flags:`Deemed acceptance immediately on delivery.`, sug:`Add an inspection/acceptance window.`},
+ {c:`Warranties & remedies for defects`, why:`What happens if the goods are faulty.`, look:`A product warranty and remedies (repair/replace/refund).`, flags:`"As is" with no remedy for defects.`, sug:`Add a warranty and defect remedies.`}
+],
+general: [
+ {c:`Core deal fully specified`, why:`The heart of any contract.`, look:`What each side gives and gets, plus amounts and dates, are all stated.`, flags:`Key terms left "to be agreed" or vague.`, sug:`Spell out each party's obligations, amounts, and dates.`},
+ {c:`Nothing referenced-but-missing`, why:`Missing attachments can hide key terms.`, look:`All referenced exhibits, schedules, and SOWs are attached.`, flags:`The document points to an exhibit that isn't included.`, sug:`Attach every referenced schedule/exhibit before signing.`},
+ {c:`Obligations are mutual`, why:`One-sided rights are the most common problem.`, look:`Rights and duties apply fairly to both sides.`, flags:`Only the other party gets termination, indemnity, or liability protection.`, sug:`Make key protections reciprocal.`}
+]
+};
+
+const TYPES = [
+ {id:'nda',         label:'NDA / Confidentiality',        extra:'nda'},
+ {id:'serviceSaas', label:'Service / Vendor / SaaS',      extra:'serviceSaas'},
+ {id:'employment',  label:'Employment / Contractor',      extra:'employment'},
+ {id:'lease',       label:'Lease / Rental',               extra:'lease'},
+ {id:'partnership', label:'Partnership / Joint Venture',  extra:'partnership'},
+ {id:'sale',        label:'Sale / Purchase',              extra:'sale'},
+ {id:'general',     label:'Other / General',              extra:'general'}
+];
+
+/* ---------------- State ---------------- */
+const STORE_KEY = 'agrmt-review-v1';
+let state = {marks:{}, notes:{}};
+try{ const s = JSON.parse(localStorage.getItem(STORE_KEY)); if(s&&s.marks){state=s;} }catch(e){}
+function save(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){} }
+
+const $ = id => document.getElementById(id);
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+/* ---------------- Build type dropdown ---------------- */
+const typeSel = $('type');
+TYPES.forEach(t => { const o=document.createElement('option'); o.value=t.id; o.textContent=t.label; typeSel.appendChild(o); });
+
+function groups(){
+  const t = TYPES.find(x=>x.id===typeSel.value) || TYPES[0];
+  return [
+    {title:'Common clauses (check on every agreement)', cat:'common', items:C.common},
+    {title:t.label + ' — specific clauses', cat:t.extra, items:C[t.extra]}
+  ];
+}
+
+/* ---------------- Render checklist ---------------- */
+function render(){
+  const host = $('checklist'); host.innerHTML='';
+  groups().forEach(g=>{
+    const sec=document.createElement('section'); sec.className='group';
+    sec.innerHTML='<h2>'+esc(g.title)+'</h2>';
+    g.items.forEach((it,i)=>{
+      const key=g.cat+'-'+i, mark=state.marks[key]||'', note=state.notes[key]||'';
+      const card=document.createElement('div');
+      card.className='clause'+(mark?' '+mark:'');
+      card.dataset.key=key;
+      card.innerHTML =
+        '<div class="chead"><div class="ctitle">'+esc(it.c)+'</div>'+
+        '<div class="marks" role="group" aria-label="Mark '+esc(it.c)+'">'+
+          '<button data-mark="ok" aria-pressed="'+(mark==='ok')+'">✓ Present</button>'+
+          '<button data-mark="attn" aria-pressed="'+(mark==='attn')+'">! Needs attention</button>'+
+          '<button data-mark="missing" aria-pressed="'+(mark==='missing')+'">✗ Missing</button>'+
+        '</div></div>'+
+        '<button class="disclose" aria-expanded="false">Why it matters / what to check ▾</button>'+
+        '<div class="details" hidden>'+
+          '<p><span class="lbl">Why it matters:</span> '+esc(it.why)+'</p>'+
+          '<p><span class="lbl">What to look for:</span> '+esc(it.look)+'</p>'+
+          '<p><span class="lbl">Red flags:</span> '+esc(it.flags)+'</p>'+
+          '<p><span class="lbl">Suggested wording:</span> '+esc(it.sug)+'</p>'+
+          '<label>Notes<textarea data-note placeholder="Optional: what you found, page/section...">'+esc(note)+'</textarea></label>'+
+        '</div>';
+      sec.appendChild(card);
+    });
+    host.appendChild(sec);
+  });
+  updateSummary();
+}
+
+/* ---------------- Interactions (event delegation) ---------------- */
+$('checklist').addEventListener('click', e=>{
+  const markBtn=e.target.closest('button[data-mark]');
+  if(markBtn){
+    const card=markBtn.closest('.clause'), key=card.dataset.key, val=markBtn.dataset.mark;
+    state.marks[key] = (state.marks[key]===val) ? '' : val;   // toggle off if same
+    if(!state.marks[key]) delete state.marks[key];
+    card.className='clause'+(state.marks[key]?' '+state.marks[key]:'');
+    card.querySelectorAll('button[data-mark]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.mark===state.marks[key]));
+    save(); updateSummary(); return;
+  }
+  const disc=e.target.closest('.disclose');
+  if(disc){
+    const d=disc.nextElementSibling, open=d.hasAttribute('hidden');
+    if(open){d.removeAttribute('hidden');} else {d.setAttribute('hidden','');}
+    disc.setAttribute('aria-expanded', open);
+    disc.textContent = (open?'Hide details ▴':'Why it matters / what to check ▾');
+  }
+});
+$('checklist').addEventListener('input', e=>{
+  const ta=e.target.closest('textarea[data-note]');
+  if(ta){ const key=ta.closest('.clause').dataset.key; state.notes[key]=ta.value; save(); updateSummary(); }
+});
+
+/* ---------------- Summary ---------------- */
+function collect(){
+  const out={missing:[],attn:[],ok:[],todo:[],total:0};
+  groups().forEach(g=>g.items.forEach((it,i)=>{
+    const key=g.cat+'-'+i, m=state.marks[key]||'', note=(state.notes[key]||'').trim();
+    out.total++;
+    const rec={c:it.c,sug:it.sug,note:note};
+    if(m==='missing')out.missing.push(rec);
+    else if(m==='attn')out.attn.push(rec);
+    else if(m==='ok')out.ok.push(rec);
+    else out.todo.push(rec);
+  }));
+  return out;
+}
+function updateSummary(){
+  const d=collect(), reviewed=d.total-d.todo.length;
+  const pct = d.total? Math.round(reviewed/d.total*100):0;
+  $('barFill').style.width=pct+'%';
+  $('progressText').textContent = reviewed+' of '+d.total+' reviewed';
+
+  const li = r => '<li><strong>'+esc(r.c)+'</strong>'+
+    (r.sug?' — <span class="sug">'+esc(r.sug)+'</span>':'')+
+    (r.note?'<br><span class="sug">Your note: '+esc(r.note)+'</span>':'')+'</li>';
+  let h='<h2>Summary</h2>';
+  h+='<p><span class="tag miss">Missing '+d.missing.length+'</span>'+
+      '<span class="tag attn">Needs attention '+d.attn.length+'</span>'+
+      '<span class="tag ok">Present '+d.ok.length+'</span>'+
+      '<span class="tag todo">Not reviewed '+d.todo.length+'</span></p>';
+  if(d.missing.length){ h+='<h3>Missing clauses to add</h3><ul>'+d.missing.map(li).join('')+'</ul>'; }
+  if(d.attn.length){ h+='<h3>Needs attention</h3><ul>'+d.attn.map(li).join('')+'</ul>'; }
+  if(!d.missing.length && !d.attn.length){ h+='<p>No gaps flagged yet. Mark clauses above as you review.</p>'; }
+  h+='<p class="sug">This checklist is a first-pass aid, not legal advice.</p>';
+  $('summary').innerHTML=h;
+  buildPrint(d);
+}
+
+/* ---------------- Print area ---------------- */
+function buildPrint(d){
+  const t=TYPES.find(x=>x.id===typeSel.value).label, side=$('side').value||'(not specified)';
+  const dt=new Date().toLocaleDateString();
+  const list = arr => arr.length? '<ul>'+arr.map(r=>'<li><strong>'+esc(r.c)+'</strong> — '+esc(r.sug)+(r.note?' [Note: '+esc(r.note)+']':'')+'</li>').join('')+'</ul>' : '<p>None.</p>';
+  $('printArea').innerHTML =
+    '<h2>Agreement Review Summary</h2>'+
+    '<p><strong>Agreement type:</strong> '+esc(t)+'<br>'+
+    '<strong>Reviewing as:</strong> '+esc(side)+'<br>'+
+    '<strong>Date:</strong> '+esc(dt)+'<br>'+
+    '<strong>Progress:</strong> '+(d.total-d.todo.length)+' of '+d.total+' clauses reviewed</p>'+
+    '<h3>Missing ('+d.missing.length+')</h3>'+list(d.missing)+
+    '<h3>Needs attention ('+d.attn.length+')</h3>'+list(d.attn)+
+    '<h3>Present & OK ('+d.ok.length+')</h3>'+
+      (d.ok.length?'<p>'+d.ok.map(r=>esc(r.c)).join(', ')+'</p>':'<p>None marked.</p>')+
+    (d.todo.length?'<h3>Not yet reviewed ('+d.todo.length+')</h3><p>'+d.todo.map(r=>esc(r.c)).join(', ')+'</p>':'')+
+    '<p><em>This checklist is a first-pass aid, not legal advice.</em></p>';
+}
+function reportText(){
+  const d=collect(), t=TYPES.find(x=>x.id===typeSel.value).label, side=$('side').value||'(not specified)';
+  const dt=new Date().toLocaleDateString();
+  const sec=(title,arr)=> title+' ('+arr.length+'):\n'+(arr.length?arr.map(r=>'  - '+r.c+' — '+r.sug+(r.note?' [Note: '+r.note+']':'')).join('\n'):'  None.')+'\n';
+  return 'AGREEMENT REVIEW SUMMARY\n'+
+    'Agreement type: '+t+'\nReviewing as: '+side+'\nDate: '+dt+'\n'+
+    'Progress: '+(d.total-d.todo.length)+' of '+d.total+' clauses reviewed\n\n'+
+    sec('MISSING',d.missing)+'\n'+sec('NEEDS ATTENTION',d.attn)+'\n'+
+    'PRESENT & OK ('+d.ok.length+'): '+(d.ok.map(r=>r.c).join(', ')||'None')+'\n'+
+    (d.todo.length?'NOT YET REVIEWED ('+d.todo.length+'): '+d.todo.map(r=>r.c).join(', ')+'\n':'')+
+    '\nThis checklist is a first-pass aid, not legal advice.';
+}
+
+/* ---------------- Buttons ---------------- */
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800); }
+$('copyBtn').addEventListener('click', async ()=>{
+  const text=reportText();
+  try{ await navigator.clipboard.writeText(text); toast('Summary copied'); }
+  catch(e){
+    const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); toast('Summary copied'); }catch(_){ toast('Copy failed — select and copy manually'); }
+    document.body.removeChild(ta);
+  }
+});
+$('printBtn').addEventListener('click', ()=>window.print());
+$('resetBtn').addEventListener('click', ()=>{
+  if(confirm('Start a new review? This clears all marks and notes.')){ state={marks:{},notes:{}}; save(); render(); }
+});
+typeSel.addEventListener('change', render);
+$('side').addEventListener('change', updateSummary);
+
+render();
+</script>
+</body>
+</html>

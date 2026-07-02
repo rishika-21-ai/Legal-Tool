@@ -20,13 +20,16 @@ lease/partnership agreements.
 
 See **[`agreement-reviewer/README.md`](agreement-reviewer/README.md)** to set it up.
 
-## Agreement Review Checklist (free web page — no AI, no accounts)
+## Agreement Auto-Checker (free web page — upload & find missing clauses)
 
-A single self-contained [web page](docs/index.html) that walks anyone through a
-clause-by-clause agreement review — pick the agreement type, mark each clause as
-Present / Needs attention / Missing, read the guidance and suggested wording, then
-Copy or Print a summary. **No AI, no sign-in, no cost, unlimited users** — ideal for
-sharing across an organisation whose people don't have Claude. Share it by emailing
-the file, hosting it on your intranet, or publishing a free link via GitHub Pages.
+An [upload-based web tool](docs/index.html) for everyone in the organisation — **no
+Claude, no sign-in, no cost**. Upload an agreement (**Word / PDF / text**) and it
+instantly scans it and shows which standard clauses are **missing**, with suggested
+wording, plus an editable results list. It runs **entirely in the browser** — the
+document is never uploaded anywhere and no AI service is called (safe for
+confidential contracts). It detects clauses by keywords, so it's an honest
+first-pass, not a lawyer-level read; a manual [checklist](docs/checklist.html) is
+also included. Share by sending the `docs/` folder or publishing a free GitHub
+Pages link.
 
-See **[`docs/README.md`](docs/README.md)** for usage and the sharing options.
+See **[`docs/README.md`](docs/README.md)** for usage, limitations, and sharing.
