@@ -1,58 +1,63 @@
-# Agreement Review Checklist (free web page)
+# Agreement tools (free web pages)
 
-`index.html` in this folder is a **complete, self-contained web page** that helps
-anyone review an agreement and spot missing or risky clauses — with plain-English
-guidance and suggested wording. 
+Two free, browser-only tools for reviewing agreements. **No sign-in, no accounts,
+no server, no cost**, and — importantly — **your document never leaves your
+computer**. They run entirely in the browser.
 
-- **No AI, no accounts, no sign-in, no cost.**
-- **No internet needed** — everything is inside the single file.
-- Works for **unlimited people**; each person just opens the page.
+| File | What it does |
+| --- | --- |
+| **`index.html`** | **Auto-Checker** — upload an agreement (Word/PDF/text) and it instantly scans it and shows which standard clauses are **missing**, with suggested wording. |
+| `checklist.html` | Manual checklist — tick each clause yourself (no upload). Linked from the Auto-Checker. |
+| `vendor/` | Bundled libraries used to read Word/PDF files in the browser (mammoth, pdf.js). No internet needed at runtime. |
 
-It's the no-cost, whole-team companion to the AI-powered `agreement-reviewer/`
-Claude Project (which needs a Claude account). The clause content mirrors
-`agreement-reviewer/checklists/*.md` — if you edit clauses in one place, update the
-other to match.
+## Auto-Checker — how it works
 
-## How a colleague uses it
+1. Open `index.html`. Drag in a file (`.docx`, `.pdf`, `.txt`) or paste the text.
+2. It reads the document **in your browser**, guesses the agreement type (you can
+   change it), and scans for each standard clause.
+3. Each clause is marked **auto: found** or **auto: not found**, with the matching
+   snippet shown so you can verify. Use the **✓ Present / ! Check / ✗ Missing**
+   buttons to correct anything.
+4. The **Summary** lists likely-missing clauses with suggested wording. **Copy** it
+   or **Print / Save as PDF**.
 
-1. Open the page (see sharing options below).
-2. Choose the **agreement type** and **which side you're on**.
-3. Read the agreement next to the checklist. For each clause, click **Present**,
-   **Needs attention**, or **Missing**. Click *"Why it matters / what to check"*
-   for guidance, red flags, and suggested wording; add optional notes.
-4. The **Summary** at the bottom lists everything missing or needing attention,
-   with suggested wording.
-5. Click **Copy summary** (to paste into an email/doc) or **Print / Save as PDF**.
+### Honest limitation (shown in the tool)
 
-Progress and notes are saved in that person's own browser, so a refresh won't lose
-their work. **Start a new review** clears it.
+The Auto-Checker finds clauses by **matching keywords**, not by truly understanding
+the text. So it's a helpful **first-pass**:
 
-## Three free ways to share it with your organisation
+- ✅ Good at: "Is there a liability cap / termination / confidentiality /
+  governing-law clause at all?" and giving suggested wording for gaps.
+- ⚠️ Not good at: judging whether a clause is *fair or one-sided*, or catching one
+  that's worded unusually — it can miss or mis-flag. Always double-check, and use
+  the buttons to correct results.
 
-**Option 1 — Email or shared drive (simplest, zero setup)**
-Send `index.html` as an attachment, or drop it in a shared Google Drive / OneDrive
-/ intranet folder. Colleagues **double-click to open** it in their browser. Done.
+It is **not legal advice**. For true AI understanding (missing + risky + tailored
+suggestions), that requires either a paid API key or each person's own Claude
+account — see the repo's `agreement-reviewer/` (Claude Project) for that path.
 
-**Option 2 — Publish a link with GitHub Pages (free)**
-Gives everyone one clean URL.
-1. On GitHub, open the **Legal-Tool** repository → **Settings** → **Pages**.
-2. Under **Build and deployment → Source**, choose **Deploy from a branch**.
-3. Pick the branch, set the folder to **`/docs`**, and click **Save**.
-4. Wait ~1 minute; GitHub shows the public URL (like
-   `https://<org>.github.io/Legal-Tool/`). Share that link.
+### Privacy
 
-**Option 3 — Any web host / intranet**
-Because it's a single static file, you can drop `index.html` onto any web server,
-SharePoint, or internal wiki that serves HTML.
+Everything runs client-side. The uploaded file is parsed in the browser and is
+**never uploaded anywhere** and **no AI service is called** — safe for confidential
+contracts.
 
-## Editing the checklist
+## Sharing it with your organisation (all free)
 
-Open `index.html` in a text editor and find the `const C = {` block near the
-bottom. Each clause is `{ c: name, why: ..., look: ..., flags: ..., sug: ... }`.
-Add, remove, or edit entries (e.g. add your company's standard positions), save,
-and re-share the file. No build step or tools required.
+1. **Email / shared drive:** send the whole `docs/` folder (it needs `index.html`,
+   `checklist.html`, and the `vendor/` folder together). Colleagues open
+   `index.html`.
+2. **GitHub Pages (public link):** repo → **Settings → Pages → Deploy from a
+   branch → Branch `main`, Folder `/docs`**. Share the resulting
+   `https://<org>.github.io/Legal-Tool/` URL. (Free Pages needs a public repo.)
+3. **Any intranet / web host:** upload the `docs/` folder.
 
-## Note
+> Note: because it reads Word/PDF files, the Auto-Checker needs the `vendor/`
+> files alongside it — keep the folder together. (The manual `checklist.html` is a
+> single file and works entirely on its own.)
 
-This checklist is a first-pass aid to help spot gaps — it is **not legal advice**.
-For anything high-stakes, have a qualified lawyer confirm.
+## Editing the clauses / keywords
+
+Open `index.html`, find `const C = {`. Each clause is
+`{ c, keys:[/regex/i, …], why, look, flags, sug }`. Edit the text or the `keys`
+detection patterns, save, re-share. No build step.

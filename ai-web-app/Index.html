@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{--bg:#f6f7f9;--card:#fff;--ink:#1c2530;--muted:#5b6b7b;--line:#e2e7ee;--brand:#2a5bd7;--brand-ink:#fff;
+    --ok:#137a4b;--ok-bg:#e6f5ed;--attn:#9a6a00;--attn-bg:#fdf3dc;--miss:#b3261e;--miss-bg:#fbe7e6;--shadow:0 1px 3px rgba(20,30,45,.08)}
+  @media(prefers-color-scheme:dark){:root{--bg:#0f141a;--card:#161d26;--ink:#e7edf4;--muted:#9fb0c0;--line:#26303c;--brand:#5b86f0;
+    --ok:#4cc38a;--ok-bg:#123528;--attn:#e0a83a;--attn-bg:#37300f;--miss:#f2837c;--miss-bg:#3a1614;--shadow:0 1px 3px rgba(0,0,0,.4)}}
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  .wrap{max-width:860px;margin:0 auto;padding:20px}
+  h1{font-size:1.5rem;margin:.2rem 0}
+  .sub{color:var(--muted);margin:.2rem 0 1rem}
+  .banner{border-radius:8px;padding:.6rem .8rem;font-size:.9rem;margin:.5rem 0;border:1px solid}
+  .banner.warn{background:var(--attn-bg);color:var(--attn);border-color:color-mix(in srgb,var(--attn) 40%,transparent)}
+  .drop{border:2px dashed var(--line);border-radius:12px;padding:1.6rem;text-align:center;background:var(--card);transition:.15s}
+  .drop.drag{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 8%,var(--card))}
+  .drop .big{font-size:1.05rem;font-weight:600;margin-bottom:.3rem}
+  .filelabel{color:var(--brand);cursor:pointer;text-decoration:underline}
+  .hint{color:var(--muted);font-size:.85rem;margin-top:.4rem}
+  details{margin:.8rem 0}summary{cursor:pointer;color:var(--brand);font-size:.9rem}
+  textarea{width:100%;min-height:120px;margin-top:.5rem;font:inherit;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:.6rem}
+  .controls{display:flex;flex-wrap:wrap;gap:1rem;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1rem;box-shadow:var(--shadow);margin:1rem 0}
+  .field{display:flex;flex-direction:column;gap:.25rem;min-width:220px;flex:1}
+  label{font-weight:600;font-size:.9rem}
+  select{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:.5rem .6rem}
+  .status{margin:.6rem 0;color:var(--muted);font-size:.9rem;min-height:1.2em}
+  .spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--line);border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite;vertical-align:-3px;margin-right:.4rem}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  button.primary,button.ghost{font:inherit;cursor:pointer;border-radius:8px;padding:.55rem .95rem;border:1px solid var(--line)}
+  button.primary{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+  button.ghost{background:var(--card);color:var(--ink)}
+  .btns{display:flex;gap:.6rem;flex-wrap:wrap;margin:1rem 0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1rem 1.15rem;box-shadow:var(--shadow);margin:.8rem 0}
+  .card h2{margin-top:0;font-size:1.15rem}
+  .item{border-top:1px solid var(--line);padding:.7rem 0}
+  .item:first-of-type{border-top:none}
+  .item .name{font-weight:600}
+  .item .why,.item .sug{font-size:.92rem;color:var(--muted);margin:.2rem 0}
+  .item .sug b,.item .why b{color:var(--ink)}
+  .sev{font-size:.72rem;padding:.05rem .5rem;border-radius:99px;margin-left:.4rem}
+  .sev.High{background:var(--miss-bg);color:var(--miss)}.sev.Medium{background:var(--attn-bg);color:var(--attn)}.sev.Low{background:var(--line);color:var(--muted)}
+  .miss-h{color:var(--miss)}.risk-h{color:var(--attn)}.ok-h{color:var(--ok)}
+  .pill{display:inline-block;background:var(--ok-bg);color:var(--ok);border-radius:99px;padding:.1rem .55rem;margin:.15rem .25rem .15rem 0;font-size:.85rem}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:.55rem 1rem;border-radius:8px;opacity:0;transition:.2s;pointer-events:none}
+  .toast.show{opacity:1}
+  footer{color:var(--muted);font-size:.82rem;text-align:center;padding:1.5rem 0}
+  @media print{.noprint{display:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Agreement AI Reviewer</h1>
+  <p class="sub">Upload an agreement and the AI shows what's <strong>missing</strong>, what's <strong>risky</strong>, and how to fix it — with suggested wording. Free, no sign-in.</p>
+  <div class="banner warn">⚠️ AI can make mistakes — this is a first-pass aid, <strong>not legal advice</strong>. Your document text is sent to Google's AI service to be reviewed. Don't upload anything you're not permitted to share.</div>
+
+  <div class="noprint">
+    <div id="drop" class="drop">
+      <div class="big">Drag &amp; drop your agreement here</div>
+      <div>or <label class="filelabel">choose a file<input type="file" id="file" accept=".txt,.md,.docx,.pdf" hidden></label></div>
+      <div class="hint">Word (.docx), PDF, or text. Scanned/image PDFs have no readable text — paste instead.</div>
+    </div>
+    <details><summary>…or paste the text instead</summary>
+      <textarea id="paste" placeholder="Paste the full agreement text here."></textarea>
+    </details>
+
+    <div class="controls">
+      <div class="field">
+        <label for="type">Agreement type</label>
+        <select id="type">
+          <option value="auto">Detect automatically</option>
+          <option value="nda">NDA / Confidentiality</option>
+          <option value="serviceSaas">Service / Vendor / SaaS</option>
+          <option value="employment">Employment / Contractor</option>
+          <option value="lease">Lease / Rental</option>
+          <option value="partnership">Partnership / Joint Venture</option>
+          <option value="sale">Sale / Purchase</option>
+          <option value="general">Other / General</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="side">Which side are you on? <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+        <select id="side">
+          <option value="">— select —</option>
+          <option>Customer / client</option><option>Vendor / provider</option>
+          <option>Employer</option><option>Employee / contractor</option>
+          <option>Disclosing party</option><option>Receiving party</option>
+          <option>Landlord / lessor</option><option>Tenant / lessee</option>
+          <option>Buyer</option><option>Seller</option><option>Partner</option>
+        </select>
+      </div>
+    </div>
+    <div class="btns"><button class="primary" id="reviewBtn" disabled>Review agreement</button></div>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div id="results"></div>
+
+  <div class="btns noprint" id="resultBtns" style="display:none">
+    <button class="primary" id="copyBtn">📋 Copy report</button>
+    <button class="ghost" id="printBtn">🖨️ Print / Save as PDF</button>
+    <button class="ghost" id="resetBtn">↺ Review another</button>
+  </div>
+
+  <footer>Powered by Google's free Gemini AI · Runs as a shared web app · Not legal advice.</footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- File readers load in the visitor's browser only when needed -->
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/legacy/build/pdf.min.js"></script>
+<script>
+var DOC_TEXT = '';
+var $ = function(id){return document.getElementById(id);};
+var esc = function(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');};
+function setStatus(html){ $('status').innerHTML = html; }
+function toast(m){ var t=$('toast'); t.textContent=m; t.classList.add('show'); setTimeout(function(){t.classList.remove('show');},1800); }
+
+function readFile(file){
+  var name=(file.name||'').toLowerCase();
+  if(name.match(/\.(txt|md)$/) || file.type==='text/plain'){ return file.text(); }
+  if(name.match(/\.docx$/)){
+    return file.arrayBuffer().then(function(ab){ return window.mammoth.extractRawText({arrayBuffer:ab}).then(function(r){return r.value||'';}); });
+  }
+  if(name.match(/\.pdf$/)){
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/legacy/build/pdf.worker.min.js';
+    return file.arrayBuffer().then(function(ab){
+      return window.pdfjsLib.getDocument({data:ab}).promise.then(function(pdf){
+        var chain=Promise.resolve(''), i;
+        for(i=1;i<=pdf.numPages;i++){ (function(p){ chain=chain.then(function(acc){
+          return pdf.getPage(p).then(function(pg){return pg.getTextContent();}).then(function(tc){
+            return acc + tc.items.map(function(it){return it.str;}).join(' ') + '\n'; }); }); })(i); }
+        return chain;
+      });
+    });
+  }
+  return file.text();
+}
+
+function loadFile(file){
+  if(!file) return;
+  setStatus('Reading “'+esc(file.name)+'”…');
+  readFile(file).then(function(text){
+    if(!text || text.replace(/\s/g,'').length<40){
+      DOC_TEXT=''; $('reviewBtn').disabled=true;
+      setStatus('Couldn’t find readable text (a scanned PDF or image?). Please paste the text instead.'); return;
+    }
+    DOC_TEXT=text; $('reviewBtn').disabled=false;
+    setStatus('Loaded '+text.length.toLocaleString()+' characters from “'+esc(file.name)+'”. Click <strong>Review agreement</strong>.');
+  }).catch(function(err){
+    setStatus('Could not read that file ('+esc(err.message)+'). Try a .docx/.txt or paste the text.');
+  });
+}
+
+function runReview(){
+  var text = DOC_TEXT || ($('paste').value||'');
+  if(text.replace(/\s/g,'').length<40){ setStatus('Please upload a file or paste the agreement text first.'); return; }
+  $('reviewBtn').disabled=true;
+  setStatus('<span class="spinner"></span>Reading the agreement with AI… this can take 10–30 seconds.');
+  $('results').innerHTML=''; $('resultBtns').style.display='none';
+  google.script.run
+    .withSuccessHandler(function(data){ $('reviewBtn').disabled=false; setStatus(''); renderReview(data); })
+    .withFailureHandler(function(err){ $('reviewBtn').disabled=false; setStatus('⚠️ '+esc(err && err.message ? err.message : err)); })
+    .reviewDocument(text, $('type').value, $('side').value);
+}
+
+var LAST=null;
+function renderReview(d){
+  LAST=d;
+  var h='';
+  h+='<div class="card"><h2>Summary</h2>';
+  if(d.detectedType) h+='<p><strong>Agreement type:</strong> '+esc(d.detectedType)+'</p>';
+  if(d.summary) h+='<p>'+esc(d.summary)+'</p>';
+  h+='<p><span class="pill" style="background:var(--miss-bg);color:var(--miss)">Missing '+d.missing.length+'</span>'+
+     '<span class="pill" style="background:var(--attn-bg);color:var(--attn)">Risky '+d.risky.length+'</span>'+
+     '<span class="pill">Present '+d.present.length+'</span></p></div>';
+
+  if(d.missing.length){
+    h+='<div class="card"><h2 class="miss-h">Missing clauses — consider adding</h2>';
+    d.missing.forEach(function(m){
+      h+='<div class="item"><div class="name">'+esc(m.clause)+'</div>'+
+         (m.why?'<div class="why">'+esc(m.why)+'</div>':'')+
+         (m.suggestion?'<div class="sug"><b>Suggested wording:</b> '+esc(m.suggestion)+'</div>':'')+'</div>';
+    });
+    h+='</div>';
+  }
+  if(d.risky.length){
+    h+='<div class="card"><h2 class="risk-h">Present but risky / one-sided</h2>';
+    d.risky.forEach(function(r){
+      h+='<div class="item"><div class="name">'+esc(r.clause)+(r.severity?'<span class="sev '+esc(r.severity)+'">'+esc(r.severity)+'</span>':'')+'</div>'+
+         (r.issue?'<div class="why">'+esc(r.issue)+'</div>':'')+
+         (r.fix?'<div class="sug"><b>Suggested fix:</b> '+esc(r.fix)+'</div>':'')+'</div>';
+    });
+    h+='</div>';
+  }
+  if(d.present.length){
+    h+='<div class="card"><h2 class="ok-h">Present &amp; found</h2><p>'+d.present.map(esc).join(' · ')+'</p></div>';
+  }
+  h+='<div class="card"><p class="why">AI first-pass — verify each point. Not legal advice.</p></div>';
+  $('results').innerHTML=h;
+  $('resultBtns').style.display='flex';
+  $('results').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function reportText(){
+  if(!LAST) return '';
+  var d=LAST, L=[];
+  L.push('AGREEMENT AI REVIEW');
+  if(d.detectedType)L.push('Type: '+d.detectedType);
+  if(d.summary)L.push('Summary: '+d.summary);
+  L.push('');
+  L.push('MISSING ('+d.missing.length+'):');
+  d.missing.forEach(function(m){L.push('  - '+m.clause+(m.suggestion?' — '+m.suggestion:''));});
+  L.push('');
+  L.push('RISKY ('+d.risky.length+'):');
+  d.risky.forEach(function(r){L.push('  - '+r.clause+(r.severity?' ['+r.severity+']':'')+(r.fix?' — '+r.fix:''));});
+  L.push('');
+  L.push('PRESENT ('+d.present.length+'): '+d.present.join(', '));
+  L.push('','AI first-pass — verify each point. Not legal advice.');
+  return L.join('\n');
+}
+
+/* wiring */
+$('file').addEventListener('change',function(e){loadFile(e.target.files[0]);});
+$('paste').addEventListener('input',function(){ DOC_TEXT=''; $('reviewBtn').disabled = ($('paste').value.replace(/\s/g,'').length<40); });
+$('reviewBtn').addEventListener('click',runReview);
+$('copyBtn').addEventListener('click',function(){
+  var t=reportText();
+  if(navigator.clipboard){ navigator.clipboard.writeText(t).then(function(){toast('Report copied');},function(){toast('Copy failed');}); }
+  else { var ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');toast('Report copied');}catch(e){} document.body.removeChild(ta); }
+});
+$('printBtn').addEventListener('click',function(){window.print();});
+$('resetBtn').addEventListener('click',function(){ DOC_TEXT=''; LAST=null; $('paste').value=''; $('results').innerHTML=''; $('resultBtns').style.display='none'; $('reviewBtn').disabled=true; setStatus(''); window.scrollTo({top:0,behavior:'smooth'}); });
+var drop=$('drop');
+['dragenter','dragover'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.add('drag');});});
+['dragleave','drop'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove('drag');});});
+drop.addEventListener('drop',function(e){ if(e.dataTransfer.files&&e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]); });
+</script>
+</body>
+</html>
