@@ -1,0 +1,9 @@
+# clasp — the script ID is environment-specific
+.clasp.json
+apps-script/.clasp.json
+
+# clasp local auth
+.clasprc.json
+
+# OS / editor
+.DS_Store
